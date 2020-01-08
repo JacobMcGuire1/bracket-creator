@@ -6,8 +6,10 @@ function App() {
   return (
     <div className="App">
       <header className="App-header">
-        <Match format={MATCHFORMAT.BO3}/>
+        
       </header>
+      <Match format={MATCHFORMAT.BO3}/>
+      
     </div>
   );
 }
@@ -31,54 +33,88 @@ class Match extends React.Component {
       showgames: false,
       scorea: 0,
       scoreb: 0,
-      games: [<Game onWin={(winner) => this.handleWin(0, winner)}/>]
+      games: [<Game value="0" onWin={(winner) => this.handleGameWin(0, winner)}/>],
+      winner: undefined
     };
   }
-  handleWin(game, winner) {
+  handleGameWin(game, winner) {
     console.log(winner);
     if (winner === TEAM.A){
       this.setState({
         scorea: this.state.scorea + 1,
-      })
+      },
+      function () {
+        if (this.state.scorea >= this.state.format.victory){
+          this.setState({
+            winner: TEAM.A
+          })
+        }else{
+          this.addGame();
+        }
+      }
+      )
     }else{
       this.setState({
         scoreb: this.state.scoreb + 1,
-      })
-    }
-    if (this.state.scorea >= this.state.format.victory || this.state.scoreb >= this.state.format.victory){
-      console.log("over");
-      return (
-        <p>Match Over</p>
-      );
-    }
-    else {
-      var newgames;
-      foreach(item in this.state.games){
-        newgames.push(item);
+      },
+      function () {
+        if (this.state.scoreb >= this.state.format.victory){
+          this.setState({
+            winner: TEAM.B
+          })
+        }else{
+          this.addGame();
+        }
       }
-      newgames.push(<Game onWin={(winner) => this.handleWin(this.state.games.length, winner)}/>);
+      )
+    }
+  }
+  addGame(){
+    if (this.state.winner === undefined){
+      var newgames = [];
+      this.state.games.forEach(
+        (item, index) =>
+        newgames.push(item)
+      );
+      newgames.push(<Game value={this.state.games.length} onWin={(winner) => this.handleGameWin(this.state.games.length, winner)}/>);
       this.setState({
         games: newgames//this.state.games.push(<Game onWin={(winner) => this.handleWin(this.state.games.length, winner)}/>),
       })
     }
   }
-  showGames() {
-    if (this.state.showgames){
-      return (
-        this.state.games.map((item, key) => 
-          <div key={key}>
-            <h2>Game {key + 1}</h2>
-            {item}
-          </div>
-        )
-      );
+  endMatch(winner){
+    this.setState({
+      winner: winner
+    })
+  }
+  getWinner(){
+    if (this.state.winner === TEAM.A){
+      return (<p>Team A wins</p>);
     }
+    if (this.state.winner === TEAM.B){
+      return (<p>Team B wins</p>);
+    }
+    return (<p>Match Incomplete</p>);
+  }
+  showGames() {
+    return (
+
+        <span className={ `${this.state.showgames ? "" : "hidden"} ${"popuptext"}` }>
+          {this.state.games.map((item, key) => 
+            <div key={item.value}>
+              <h2>Game {key + 1}</h2>
+              {item}
+            </div>
+          )}
+        </span>
+    );
   }
   render() {
     return (
-      <div>
-        <h1>Match ({this.state.format.name})</h1>
-        <button onClick={() => this.setState({showgames: !this.state.showgames})}>Show/Hide</button>
+      <div class="popup" onClick={() => this.setState({showgames: !this.state.showgames})}>
+            <h1>Team A vs Team B</h1>
+            <h1>{this.state.format.name}</h1>
+            {this.getWinner()}
         {this.showGames()}
       </div>
     );
@@ -96,10 +132,12 @@ class Game extends React.Component {
   }
   setWinner(winner) {
     //may need to change namne?
-    this.setState({
-      winner: winner
-    })
-    this.props.onWin(winner);
+    if (this.state.winner != winner){
+      this.setState({
+        winner: winner
+      })
+      this.props.onWin(winner);
+    }
   }
   getWinner() {
     if (this.state.winner === TEAM.A) {
