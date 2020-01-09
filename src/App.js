@@ -1,14 +1,17 @@
 import React from 'react';
+
+import Popup from "reactjs-popup";
+
 import logo from './logo.svg';
 import './App.css';
 
 function App() {
   return (
     <div className="App">
-      <header className="App-header">
-        
-      </header>
+      {//<header className="App-header"></header>
+      }
       <Match format={MATCHFORMAT.BO3}/>
+      
       
     </div>
   );
@@ -98,25 +101,57 @@ class Match extends React.Component {
   }
   showGames() {
     return (
-
-        <span className={ `${this.state.showgames ? "" : "hidden"} ${"popuptext"}` }>
+      <span>
+        <button onClick={() => this.reset()}>Reset Match</button>
+        {this.state.games.map((item, key) => 
+          <div key={item.value}>
+            <h2>Game {key + 1}</h2>
+            {item}
+          </div>
+        )}
+      </span>
+        /*<span className={this.state.showgames ? "" : "hidden"}>
           {this.state.games.map((item, key) => 
             <div key={item.value}>
               <h2>Game {key + 1}</h2>
               {item}
             </div>
           )}
-        </span>
+          </span>*/
     );
+  }
+  reset() {
+    this.setState({
+      scorea: 0,
+      scoreb: 0,
+      winner: undefined,
+      games: []
+    },
+    function () {
+      this.setState({
+        games: [<Game value="0" onWin={(winner) => this.handleGameWin(0, winner)}/>]
+      })
+    })
   }
   render() {
     return (
-      <div class="popup" onClick={() => this.setState({showgames: !this.state.showgames})}>
+      <Popup trigger={
+        <button> 
+          <div>
             <h1>Team A vs Team B</h1>
             <h1>{this.state.format.name}</h1>
             {this.getWinner()}
-        {this.showGames()}
-      </div>
+          </div>
+        </button>
+      } position="right center">
+        <div>{this.showGames()}</div>
+      </Popup>
+      //<div onClick={() => this.setState({showgames: !this.state.showgames})}>
+         //   <h1>Team A vs Team B</h1>
+       //     <h1>{this.state.format.name}</h1>
+        //    {this.getWinner()}
+       // {this.showGames()}
+      //</div>
     );
   }
 }
