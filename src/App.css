@@ -11,6 +11,9 @@
   visibility: hidden;
 }
 
+.match {
+}
+
 @media (prefers-reduced-motion: no-preference) {
   .App-logo {
     animation: App-logo-spin infinite 20s linear;
@@ -31,6 +34,27 @@
 .App-link {
   color: #61dafb;
 }
+
+.round{
+  /* background-color: #a9a9a9;*/
+   width: 200px;
+   margin: 0px;
+   /*height: 1800px;*/
+   padding-left: 0px;
+   float: left;
+     
+ }
+
+#menu{
+  /* background-color: #a9a9a9;*/
+   width: 300px;
+   margin: 0px;
+   /*height: 1800px;*/
+   padding-left: 0px;
+   float: left;
+     
+   
+ }
 
 @keyframes App-logo-spin {
   from {
